@@ -1,0 +1,136 @@
+---
+import { formatDate } from "../lib/helpers"
+import { type CollectionEntry, getCollection } from "astro:content"
+import BasicLayout from "./BasicLayout.astro"
+
+interface Props {
+  post: CollectionEntry<"posts">
+}
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts")
+  return posts.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }))
+}
+
+const { post } = Astro.props
+
+const { title, author, description, ogImage, canonicalURL, pubDatetime, tags } =
+  post.data
+
+const { Content, remarkPluginFrontmatter } = await post.render()
+
+const { readingTime, words } = remarkPluginFrontmatter
+
+const ogImageUrl = typeof ogImage === "string" ? ogImage : ogImage?.src
+const ogUrl = new URL(ogImageUrl ?? `/posts/${post.slug}.png`, Astro.url.origin)
+  .href
+---
+
+<BasicLayout
+  title={title + " | " + "李瑞丰 - liruifengv"}
+  author={author}
+  description={description}
+  ogImage={ogUrl}
+  canonicalURL={canonicalURL}
+>
+  <main class="mx-auto max-w-3xl w-full h-screen p-8 text-neutral-100">
+    <a
+      href="/posts"
+      class="text-white bg-neutral-900 hover:bg-neutral-800 px-4 py-2 border border-solid border-neutral-600 rounded-lg mb-8"
+      >Back</a
+    >
+    <div class="my-10">
+      <h1 class="text-5xl font-semibold">{title}</h1>
+      <div class="flex justify-between pt-4 text-gray-500 text-sm">
+        <p>{formatDate(new Date(pubDatetime))}</p>
+        <p>{readingTime}</p>
+      </div>
+    </div>
+    <article
+      id="article"
+      role="article"
+      class="mx-auto max-w-3xl prose-base dark:prose-invert prose-img:rounded-xl prose-li:list-disc prose-code:bg-gray-800 prose-code:text-[#d63384] prose-code:px-1 prose-blockquote:border-l-2 prose-a:underline prose-a:underline-offset-2 prose-blockquote:border-l-gray-500"
+    >
+      <Content />
+    </article>
+  </main>
+</BasicLayout>
+
+<style>
+  #article {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+
+  h1 {
+    font-size: 32px;
+  }
+
+  h2 {
+    font-size: 28px;
+  }
+
+  h3 {
+    font-size: 24px;
+  }
+
+  h4 {
+    font-size: 20px;
+  }
+
+  h5 {
+    font-size: 18px;
+  }
+
+  h6 {
+    font-size: 16px;
+  }
+
+  p {
+    margin: 0 0 10px 0;
+  }
+
+  a {
+    color: #108ee9;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  a:hover {
+    color: #d63384;
+  }
+
+  ul,
+  ol {
+    margin-left: 20px;
+    margin-bottom: 10px;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  th,
+  td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+  }
+}
+</style>

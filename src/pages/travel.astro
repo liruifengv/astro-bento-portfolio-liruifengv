@@ -1,0 +1,36 @@
+---
+import Globe from "../components/Globe";
+import BasicLayout from "../layouts/BasicLayout.astro";
+
+const title = "李瑞丰（liruifengv） - 我到过的地方"
+const description = "显示我去过的国家的3D地球"
+---
+
+<script>
+  import { timeline, type TimelineDefinition } from "motion";
+
+  const sequence = [
+    [
+      ".loaderRef",
+      { opacity: [1, 0], pointerEvents: "none" },
+      { easing: "ease-out" },
+    ],
+  ];
+
+  timeline(sequence as TimelineDefinition);
+</script>
+
+<BasicLayout
+  title={title}
+  description={description}
+  page="travel"
+
+>
+  <a
+    href="/"
+    class="text-white absolute bg-neutral-900 hover:bg-neutral-800 top-4 left-4 px-4 py-2 border-1 border-solid border-neutral-600 rounded-lg"
+    >Back</a
+  >
+
+  <Globe client:load />
+</BasicLayout>
